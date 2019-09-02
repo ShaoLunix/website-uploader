@@ -31,12 +31,13 @@ mycontact="https://github.com/ShaoLunix/$myproject/issues"
 #===========#
 # Required commands
 requiredcommand="openssl"
-password=${@: -1}
+password=""
 passphrase="]MK0U3;Rm;U}1Nw"
 encryptedpass=""
 decryptedpass=""
 display_pass="off"
 isdisplayed=false
+isinteractive=false
 isprotocol=false
 declare -a protocol
 protocol=( "ftp" "ssh" )
@@ -78,13 +79,14 @@ displayhelp()
     echo "$myscript encrypts the password passed in argument."
     echo "With no option, the command returns an error"
     echo
-    echo "$myscript [-p PROTOCOL] PASSWORD"
+    echo "$myscript [-i] [-p PROTOCOL] PASSWORD"
     echo "$myscript [-d PASSWORD_STATUS] PASSWORD"
     echo "$myscript [-h]"
     echo "$myscript [-v]"
     echo
     echo "  -d :        display the encrypted or decrypted password. The PASSWORD_STATUS can be 'encrypted' or 'decrypted'. By default, it is 'off' which means the password will not be displayed."
     echo "  -h :        display the help."
+    echo "  -i :        interactive mode for the password. The password is typed and confirmed at the prompt in a hidden way."
     echo "  -p :        protocol the password is required. The PROTOCOL argument can be 'FTP' or 'SSH' (insensitive case)."
     echo "  -v :        this script version."
     echo
@@ -97,6 +99,32 @@ displayhelp()
     exit
 }
 
+# Getting the password
+# It can be an argument on the command line
+# or typed at the prompt in an interactive mode
+getPassword()
+{
+    # If the interactive mode is on
+    # Then the password is asked by the script after execution and in a hidden way
+    if [ "$isinteractive" == true ]
+        then
+            pass_1=true
+            pass_2=false
+            while [ "$pass_1" != "$pass_2" ]
+            do
+                read -p "Enter password :" -s pass_1
+                echo
+                read -p "Confirm password :" -s pass_2
+                echo
+                if [ "$pass_1" == "$pass_2" ]
+                    then password="$pass_1"
+                    else echo "Passwords do not match. Do it again."
+                fi
+            done
+        else password=${@: -1}
+    fi
+}
+
 #=== MANAGING EXIT SIGNALS
 trap 'abnormalExit' 1 2 3 4 15
 
@@ -107,9 +135,10 @@ trap 'abnormalExit' 1 2 3 4 15
 #=======#
 # -d : display the encrypted/decrypted password
 # -h : display the help
+# -i : interactive mode
 # -p : protocol the password is required
 # -v : this script version
-while getopts "d:hp:v" option
+while getopts "d:hip:v" option
 do
     case "$option" in
         d)
@@ -122,6 +151,9 @@ do
         h)
             displayhelp
             exit "$exitstatus"
+            ;;
+        i)
+            isinteractive=true
             ;;
         p)
             protocol=${OPTARG}
@@ -147,9 +179,12 @@ done
 #===============#
 # PREREQUISITES #
 #===============#
+#=== Required command
 if ! type "$requiredcommand" > /dev/null 2>&1
     then prerequisitenotmet
 fi
+#=== Required password
+getPassword
 if [ -z "$password" ]
     then usage
 fi
