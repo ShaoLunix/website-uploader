@@ -31,6 +31,7 @@ mycontact="https://github.com/ShaoLunix/$myproject/issues"
 #===========#
 # Required commands
 requiredcommand="openssl"
+lastargument=""
 password=""
 passphrase="]MK0U3;Rm;U}1Nw"
 encryptedpass=""
@@ -121,7 +122,8 @@ getPassword()
                     else echo "Passwords do not match. Do it again."
                 fi
             done
-        else password=${@: -1}
+        else
+            password="$lastargument"
     fi
 }
 
@@ -184,6 +186,7 @@ if ! type "$requiredcommand" > /dev/null 2>&1
     then prerequisitenotmet
 fi
 #=== Required password
+lastargument="${@: -1}"
 getPassword
 if [ -z "$password" ]
     then usage

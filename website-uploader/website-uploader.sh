@@ -52,6 +52,7 @@ script_configfile="website-uploader.conf"
 list_of_files="listof-files-tobe-transferred"
 backup="off"
 isbackup=false
+decryptedpass=""
 isdecrypt=false
 iscompressed=false
 sourcetype=""
@@ -74,9 +75,6 @@ currentTime=$(date +"%Y%m%d"_"%H%M%S")
 . "$script_configfile"
 # Loading the configuration file
 load_configfile
-
-# Getting the decrypted password
-decrypt_password
 
 
 
