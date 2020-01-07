@@ -9,6 +9,8 @@
 # to connect to it and do it manually.
 #
 # Versions
+# [2020-01-07] [1.0.2] [Stéphane-Hervé] bug correction : decryption of the password stored in the configuration file
+# [2019-11-17] [1.0.1] [Stéphane-Hervé]
 # [2019-09-02] [1.0] [Stéphane-Hervé] First version
 #==============================================================================#
 # strict mode
@@ -16,7 +18,7 @@ set -o nounset
 
 
 #=== THIS SCRIPT DETAILS
-VER=1.0
+VER=1.0.1
 myscript="website-uploader"
 myproject="$myscript"
 mycontact="https://github.com/ShaoLunix/$myproject/issues"
@@ -152,6 +154,7 @@ do
             ;;
         d)
             isdecrypt=true
+            isssh_pass=true
             ;;
         f)
             list_of_files=${OPTARG}
@@ -203,6 +206,7 @@ done
 # If the password must be decrypted
 # Then execute the decrypt function
 # Else the decrypted password is as it was passed
+echo "isdecrypt <= $isdecrypt ; isssh_pass <= $isssh_pass"
 if [ "$isdecrypt" == true ] && [ "$isssh_pass" == true ]
     then
         decrypt_password
