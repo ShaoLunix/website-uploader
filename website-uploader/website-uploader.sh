@@ -206,7 +206,6 @@ done
 # If the password must be decrypted
 # Then execute the decrypt function
 # Else the decrypted password is as it was passed
-echo "isdecrypt <= $isdecrypt ; isssh_pass <= $isssh_pass"
 if [ "$isdecrypt" == true ] && [ "$isssh_pass" == true ]
     then
         decrypt_password
